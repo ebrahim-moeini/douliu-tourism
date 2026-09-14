@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="雲中街生活聚落｜Yunzhong Street Life Settlement - 雲林斗六日式文創聚落">
+  <title>雲中街生活聚落 | Yunzhong Street</title>
+  <style>
+    :root {
+      --primary: #2c5f4a;
+      --primary-light: #3d7a62;
+      --accent: #c4a35a;
+      --bg: #f7f5f0;
+      --text: #2a2a2a;
+      --text-light: #5a5a5a;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(0,0,0,0.08);
+      --radius: 12px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(80px + var(--safe-bottom));
+    }
+
+    /* ===== 語言切換按鈕（置頂、手機可覆蓋至邊界） ===== */
+    .lang-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      width: 100%;
+      background: var(--primary);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .lang-btn {
+      flex: 1;
+      padding: 14px 0;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.7);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .lang-btn.active {
+      background: var(--primary-light);
+      color: var(--white);
+    }
+
+    .lang-btn:active {
+      opacity: 0.9;
+    }
+
+    /* ===== 標題區 ===== */
+    .hero {
+      text-align: center;
+      padding: 28px 20px 16px;
+      background: linear-gradient(180deg, #e8f0eb 0%, var(--bg) 100%);
+    }
+
+    .hero h1 {
+      font-size: clamp(28px, 8vw, 36px);
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .hero .subtitle {
+      font-size: 14px;
+      color: var(--text-light);
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== 圖片滑動區（手機左右覆蓋至邊界） ===== */
+    .gallery-section {
+      margin: 12px 0 24px;
+    }
+
+    .gallery-wrap {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gallery {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      gap: 0;
+      padding: 0;
+    }
+
+    .gallery::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery-item {
+      flex: 0 0 100%;
+      width: 100%;
+      scroll-snap-align: start;
+      position: relative;
+      aspect-ratio: 16 / 10;
+      background: #dce5df;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gallery-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.65));
+      color: white;
+      font-size: 13px;
+    }
+
+    .gallery-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #c5d0c9;
+      transition: all 0.25s;
+    }
+
+    .dot.active {
+      background: var(--primary);
+      width: 20px;
+      border-radius: 4px;
+    }
+
+    /* ===== 影片區 ===== */
+    .video-section {
+      padding: 0 16px 28px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 12px;
+      letter-spacing: 0.04em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: "";
+      display: inline-block;
+      width: 4px;
+      height: 18px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    .video-wrap {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: #000;
+    }
+
+    .video-wrap iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* ===== 文字介紹區 ===== */
+    .intro-section {
+      padding: 0 16px 32px;
+    }
+
+    .intro-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .intro-card h2 {
+      font-size: 17px;
+      color: var(--primary);
+      margin-bottom: 12px;
+      font-weight: 700;
+    }
+
+    .intro-card p {
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 14px;
+      text-align: justify;
+    }
+
+    .intro-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .info-list {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e8ebe9;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .info-list dt {
+      font-weight: 600;
+      color: var(--primary);
+      margin-top: 10px;
+    }
+
+    .info-list dd {
+      margin-left: 0;
+      margin-bottom: 4px;
+    }
+
+    /* ===== 360環景按鈕 + 地圖 ===== */
+    .extra-actions {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .btn-360 {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, #2c5f4a 0%, #3d7a62 100%);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+      box-shadow: 0 4px 14px rgba(44, 95, 74, 0.3);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .btn-360:active {
+      transform: scale(0.98);
+    }
+
+    .btn-360 svg {
+      width: 22px;
+      height: 22px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    .map-wrap {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding-bottom: 75%;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      background: #e8ebe9;
+    }
+
+    .map-wrap iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* ===== 懸浮語音小幫手 ===== */
+    .voice-fab {
+      position: fixed;
+      right: max(16px, var(--safe-right));
+      bottom: calc(24px + var(--safe-bottom));
+      z-index: 90;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      border: none;
+      box-shadow: 0 6px 20px rgba(44, 95, 74, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .voice-fab:active {
+      transform: scale(0.92);
+    }
+
+    .voice-fab.playing {
+      background: var(--accent);
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 6px 20px rgba(196, 163, 90, 0.5); }
+      50% { box-shadow: 0 6px 28px rgba(196, 163, 90, 0.8); }
+    }
+
+    .voice-fab svg {
+      width: 26px;
+      height: 26px;
+      fill: currentColor;
+    }
+
+    .voice-tooltip {
+      position: absolute;
+      right: 66px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0,0,0,0.75);
+      color: white;
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .voice-fab:hover .voice-tooltip,
+    .voice-fab.show-tip .voice-tooltip {
+      opacity: 1;
+    }
+
+    /* ===== 版權區 ===== */
+    .footer {
+      background: #1e3d32;
+      color: rgba(255,255,255,0.85);
+      padding: 28px 16px calc(20px + var(--safe-bottom));
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .footer .copy {
+      margin-top: 12px;
+      opacity: 0.7;
+      font-size: 12px;
+    }
+
+    /* ===== 桌面端微調 ===== */
+    @media (min-width: 768px) {
+      body {
+        max-width: 640px;
+        margin: 0 auto;
+        box-shadow: 0 0 40px rgba(0,0,0,0.06);
+      }
+
+      .gallery-item {
+        flex: 0 0 85%;
+        margin-right: 12px;
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .gallery {
+        padding: 0 16px;
+        gap: 12px;
+      }
+
+      .gallery-item:last-child {
+        margin-right: 16px;
+      }
+
+      .video-section,
+      .intro-section {
+        padding-left: 24px;
+        padding-right: 24px;
+      }
+
+      .voice-fab {
+        right: calc(50% - 320px + 16px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 1. 中英文置頂按鈕 -->
+  <div class="lang-bar">
+    <button class="lang-btn active" data-lang="zh" aria-label="中文">中文</button>
+    <button class="lang-btn" data-lang="en" aria-label="English">EN</button>
+  </div>
+
+  <!-- 2. 標題 -->
+  <header class="hero">
+    <h1 data-i18n="title">雲中街</h1>
+    <p class="subtitle" data-i18n="subtitle">生活聚落 · 雲林斗六</p>
+  </header>
+
+  <!-- 3. 圖片滑動區 -->
+  <section class="gallery-section">
+    <div class="gallery-wrap">
+      <div class="gallery" id="gallery">
+        <div class="gallery-item">
+          <img src="https://mimigo.tw/wp-content/uploads/20210220201715_50.jpg" alt="雲中街日式建築" loading="lazy">
+          <div class="gallery-caption" data-i18n="cap1">日式木造宿舍群 · 歷史建築</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://mimigo.tw/wp-content/uploads/20210220201808_88.jpg" alt="雲中街綠意" loading="lazy">
+          <div class="gallery-caption" data-i18n="cap2">綠蔭環繞的文創聚落</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://mimigo.tw/wp-content/uploads/20210220201724_99.jpg" alt="雲中街小店" loading="lazy">
+          <div class="gallery-caption" data-i18n="cap3">特色小店與咖啡香</div>
+        </div>
+        <div class="gallery-item">
+          <img src="https://mimigo.tw/wp-content/uploads/20210220201804_94.jpg" alt="雲中街午後" loading="lazy">
+          <div class="gallery-caption" data-i18n="cap4">午後散策好去處</div>
+        </div>
+      </div>
+    </div>
+    <div class="gallery-dots" id="dots"></div>
+  </section>
+
+  <!-- 4. 影片區 -->
+  <section class="video-section">
+    <h2 class="section-title" data-i18n="videoTitle">影片介紹</h2>
+    <div class="video-wrap">
+   <iframe
+  src="https://www.youtube.com/embed/AAK2r4cGhOw?rel=0&modestbranding=1"
+  title="雲中街生活聚落"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+  loading="lazy"></iframe>
+    </div>
+  </section>
+
+  <!-- 5. 文字介紹區 -->
+  <section class="intro-section">
+    <h2 class="section-title" data-i18n="introTitle">景點介紹</h2>
+    <div class="intro-card">
+      <h2 data-i18n="introHead">雲林的小京都</h2>
+      <p data-i18n="intro1">
+        雲中街生活聚落位於雲林縣斗六市，原為日治時期昭和12年（1937年）興建的警察宿舍群。這些木造日式建築於2005年登錄為歷史建築，經縣府修復活化後，成為充滿文青氣息的文創園區。
+      </p>
+      <p data-i18n="intro2">
+        園區範圍不大，卻保有濃厚的日式懷舊風情，被譽為雲林「小京都」。綠樹環繞、黑瓦屋頂與編竹泥牆的宿舍，搭配在地特色小店，是散步、拍照與喝杯咖啡的絕佳去處。
+      </p>
+      <p data-i18n="intro3">
+        目前進駐店家包括凹凸咖啡、拾柿優格、啊拇啊拇、紙農書院等，結合雲林在地農產與手作文化，讓遊客感受慢活的日常。
+      </p>
+      <dl class="info-list">
+        <dt data-i18n="infoAddrLabel">地址</dt>
+        <dd data-i18n="infoAddr">雲林縣斗六市雲林路一段75巷7號</dd>
+        <dt data-i18n="infoTimeLabel">開放時間</dt>
+        <dd data-i18n="infoTime">週二至週日 11:00–19:00（週一休息）</dd>
+        <dt data-i18n="infoTelLabel">電話</dt>
+        <dd>05-5336521</dd>
+        <dt data-i18n="infoFeeLabel">門票</dt>
+        <dd data-i18n="infoFee">免費參觀</dd>
+      </dl>
+
+      <!-- 實境360環景按鈕 + Google Map -->
+      <div class="extra-actions">
+        <a class="btn-360"
+           href="https://www.google.com/maps/search/?api=1&query=%E9%9B%B2%E4%B8%AD%E8%A1%97%E7%94%9F%E6%B4%BB%E8%81%9A%E8%90%BD+%E6%96%97%E5%85%AD"
+           target="_blank"
+           rel="noopener"
+           id="btn360">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+            <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.35"/>
+          </svg>
+          <span data-i18n="btn360">實境360環景</span>
+        </a>
+
+        <div class="map-wrap">
+          <iframe
+            src="https://www.google.com/maps?q=%E9%9B%B2%E6%9E%97%E7%B8%A3%E6%96%97%E5%85%AD%E5%B8%82%E9%9B%B2%E6%9E%97%E8%B7%AF%E4%B8%80%E6%AE%B575%E5%B7%B77%E8%99%9F&hl=zh-TW&z=17&output=embed"
+            title="雲中街生活聚落地圖"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 懸浮語音小幫手 -->
+  <button class="voice-fab" id="voiceBtn" aria-label="語音導覽">
+    <span class="voice-tooltip" data-i18n="voiceTip">點我聽語音介紹</span>
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+    </svg>
+  </button>
+
+  <!-- 7. 版權介紹頁 -->
+  <footer class="footer">
+    <p data-i18n="footer1">本頁面為旅遊介紹示範用途</p>
+    <p data-i18n="footer2">景點資訊參考公開資料，實際營業以現場為準</p>
+    <p>
+      <a href="https://www.facebook.com/YunzhongStreet/" target="_blank" rel="noopener">雲中街生活聚落 粉絲專頁</a>
+    </p>
+    <p class="copy">
+      © 2026 旅遊介紹頁 · 僅供學習與展示使用<br>
+      Images: picsum.photos (placeholder) · Video: YouTube
+    </p>
+  </footer>
+
+  <script>
+    // ===== 多語系內容 =====
+    const i18n = {
+      zh: {
+        title: "雲中街",
+        subtitle: "生活聚落 · 雲林斗六",
+        cap1: "日式木造宿舍群 · 歷史建築",
+        cap2: "綠蔭環繞的文創聚落",
+        cap3: "特色小店與咖啡香",
+        cap4: "午後散策好去處",
+        videoTitle: "影片介紹",
+        introTitle: "景點介紹",
+        introHead: "雲林的小京都",
+        intro1: "雲中街生活聚落位於雲林縣斗六市，原為日治時期昭和12年（1937年）興建的警察宿舍群。這些木造日式建築於2005年登錄為歷史建築，經縣府修復活化後，成為充滿文青氣息的文創園區。",
+        intro2: "園區範圍不大，卻保有濃厚的日式懷舊風情，被譽為雲林「小京都」。綠樹環繞、黑瓦屋頂與編竹泥牆的宿舍，搭配在地特色小店，是散步、拍照與喝杯咖啡的絕佳去處。",
+        intro3: "目前進駐店家包括凹凸咖啡、拾柿優格、啊拇啊拇、紙農書院等，結合雲林在地農產與手作文化，讓遊客感受慢活的日常。",
+        infoAddrLabel: "地址",
+        infoAddr: "雲林縣斗六市雲林路一段75巷7號",
+        infoTimeLabel: "開放時間",
+        infoTime: "週二至週日 11:00–19:00（週一休息）",
+        infoTelLabel: "電話",
+        infoFeeLabel: "門票",
+        infoFee: "免費參觀",
+        btn360: "實境360環景",
+        voiceTip: "點我聽語音介紹",
+        footer1: "本頁面為旅遊介紹示範用途",
+        footer2: "景點資訊參考公開資料，實際營業以現場為準",
+        voiceText: "歡迎來到雲中街生活聚落。這裡原本是日治時期的警察宿舍，一九三七年建成，二零零五年登錄為歷史建築。現在是充滿日式風情的文創聚落，有咖啡店、優格、手作紙藝等特色小店。開放時間是星期二到星期日上午十一點到晚上七點，星期一休息，免費參觀。地址在雲林縣斗六市雲林路一段七十五巷七號。歡迎慢慢散步，感受雲林的小京都。"
+      },
+      en: {
+        title: "Yunzhong Street",
+        subtitle: "Life Settlement · Douliu, Yunlin",
+        cap1: "Japanese wooden dormitories · Historic buildings",
+        cap2: "Green cultural & creative settlement",
+        cap3: "Boutique shops & coffee aroma",
+        cap4: "Perfect for an afternoon stroll",
+        videoTitle: "Video",
+        introTitle: "About the Place",
+        introHead: "Yunlin’s Little Kyoto",
+        intro1: "Yunzhong Street Life Settlement is located in Douliu, Yunlin County. Originally a police dormitory complex built in 1937 during the Japanese colonial period, the wooden Japanese-style buildings were registered as historic structures in 2005. After restoration by the county government, they have become a charming cultural and creative park.",
+        intro2: "Though compact in size, the settlement retains a strong Japanese retro atmosphere and is often called Yunlin’s “Little Kyoto.” Surrounded by trees, with black-tiled roofs and bamboo-mud walls, the dormitories and local specialty shops make it an ideal spot for walking, photography, and enjoying a cup of coffee.",
+        intro3: "Current shops include Aotu Café, Shishi Yogurt, Amm Amm, and Paper Farm Academy, combining Yunlin’s local produce and handmade culture for a slow-living experience.",
+        infoAddrLabel: "Address",
+        infoAddr: "No. 7, Lane 75, Sec. 1, Yunlin Rd., Douliu City, Yunlin County",
+        infoTimeLabel: "Hours",
+        infoTime: "Tue–Sun 11:00–19:00 (Closed Mondays)",
+        infoTelLabel: "Tel",
+        infoFeeLabel: "Admission",
+        infoFee: "Free",
+        btn360: "360° Street View",
+        voiceTip: "Tap for audio guide",
+        footer1: "This page is a tourism introduction demo",
+        footer2: "Information is based on public sources; please check on-site for the latest hours",
+        voiceText: "Welcome to Yunzhong Street Life Settlement. This place was originally a police dormitory complex built in 1937 during the Japanese colonial period, and registered as historic buildings in 2005. It is now a cultural and creative settlement with Japanese atmosphere, featuring cafés, yogurt shops, and handmade paper workshops. Opening hours are Tuesday to Sunday, 11 a.m. to 7 p.m., closed on Mondays. Admission is free. Address: No. 7, Lane 75, Section 1, Yunlin Road, Douliu City, Yunlin County. Take your time strolling and enjoy Yunlin’s little Kyoto."
+      }
+    };
+
+    let currentLang = "zh";
+    let isSpeaking = false;
+
+    // 語言切換
+    document.querySelectorAll(".lang-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const lang = btn.dataset.lang;
+        if (lang === currentLang) return;
+        currentLang = lang;
+        document.querySelectorAll(".lang-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.documentElement.lang = lang === "zh" ? "zh-Hant" : "en";
+        applyI18n();
+        // 若正在播放，停止並更新提示
+        if (isSpeaking) {
+          window.speechSynthesis.cancel();
+          isSpeaking = false;
+          document.getElementById("voiceBtn").classList.remove("playing");
+        }
+      });
+    });
+
+    function applyI18n() {
+      const dict = i18n[currentLang];
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.dataset.i18n;
+        if (dict[key]) el.textContent = dict[key];
+      });
+    }
+
+    // 圖片滑動指示點
+    const gallery = document.getElementById("gallery");
+    const dotsContainer = document.getElementById("dots");
+    const items = gallery.querySelectorAll(".gallery-item");
+
+    items.forEach((_, i) => {
+      const dot = document.createElement("div");
+      dot.className = "dot" + (i === 0 ? " active" : "");
+      dotsContainer.appendChild(dot);
+    });
+
+    const dots = dotsContainer.querySelectorAll(".dot");
+
+    gallery.addEventListener("scroll", () => {
+      const scrollLeft = gallery.scrollLeft;
+      const width = gallery.offsetWidth;
+      const index = Math.round(scrollLeft / width);
+      dots.forEach((d, i) => d.classList.toggle("active", i === index));
+    });
+
+    // 語音小幫手（Web Speech API）
+    const voiceBtn = document.getElementById("voiceBtn");
+
+    voiceBtn.addEventListener("click", () => {
+      if (!window.speechSynthesis) {
+        alert(currentLang === "zh" ? "您的瀏覽器不支援語音功能" : "Speech not supported in this browser");
+        return;
+      }
+
+      if (isSpeaking) {
+        window.speechSynthesis.cancel();
+        isSpeaking = false;
+        voiceBtn.classList.remove("playing");
+        return;
+      }
+
+      const utter = new SpeechSynthesisUtterance(i18n[currentLang].voiceText);
+      utter.lang = currentLang === "zh" ? "zh-TW" : "en-US";
+      utter.rate = 0.95;
+      utter.pitch = 1;
+
+      // 嘗試選擇較自然的語音
+      const voices = window.speechSynthesis.getVoices();
+      const preferred = voices.find(v =>
+        currentLang === "zh"
+          ? v.lang.includes("zh") && (v.name.includes("Google") || v.name.includes("Ting") || v.name.includes("Mei"))
+          : v.lang.includes("en") && (v.name.includes("Google") || v.name.includes("Samantha") || v.name.includes("Alex"))
+      );
+      if (preferred) utter.voice = preferred;
+
+      utter.onstart = () => {
+        isSpeaking = true;
+        voiceBtn.classList.add("playing");
+      };
+      utter.onend = () => {
+        isSpeaking = false;
+        voiceBtn.classList.remove("playing");
+      };
+      utter.onerror = () => {
+        isSpeaking = false;
+        voiceBtn.classList.remove("playing");
+      };
+
+      window.speechSynthesis.speak(utter);
+    });
+
+    // 預載語音列表（部分瀏覽器需要）
+    if (window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+      window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    }
+
+    // 首次顯示提示
+    setTimeout(() => {
+      voiceBtn.classList.add("show-tip");
+      setTimeout(() => voiceBtn.classList.remove("show-tip"), 3000);
+    }, 1500);
+  </script>
+</body>
+</html>
