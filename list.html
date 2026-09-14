@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="description" content="斗六景點店家列表搜尋｜雲中街・太平老街・行啟紀念館">
+  <title>景點店家列表 | 斗六旅遊</title>
+  <style>
+    :root {
+      --primary: #2c5f4a;
+      --primary-light: #3d7a62;
+      --accent: #c4a35a;
+      --bg: #f7f5f0;
+      --text: #2a2a2a;
+      --text-light: #5a5a5a;
+      --white: #ffffff;
+      --shadow: 0 4px 16px rgba(0,0,0,0.07);
+      --radius: 12px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      overflow-x: hidden;
+      padding-top: var(--safe-top);
+      padding-bottom: calc(24px + var(--safe-bottom));
+      min-height: 100vh;
+    }
+
+    /* 頂部 */
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 16px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    }
+
+    .header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-align: center;
+    }
+
+    .header .sub {
+      font-size: 12px;
+      opacity: 0.8;
+      text-align: center;
+      margin-top: 2px;
+    }
+
+    /* 搜尋條件區 */
+    .filter-panel {
+      background: var(--white);
+      padding: 16px;
+      margin: 12px 12px 0;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .filter-row {
+      margin-bottom: 14px;
+    }
+
+    .filter-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .filter-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    select {
+      width: 100%;
+      padding: 11px 14px;
+      font-size: 15px;
+      border: 1.5px solid #d8e0db;
+      border-radius: 10px;
+      background: #fafbfa;
+      color: var(--text);
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%232c5f4a' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: white;
+    }
+
+    /* 標籤區 */
+    .tag-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-btn {
+      padding: 7px 14px;
+      font-size: 13px;
+      border-radius: 20px;
+      border: 1.5px solid #c5d0c9;
+      background: white;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: all 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+      font-weight: 500;
+    }
+
+    .tag-btn.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .tag-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* 結果統計 */
+    .result-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px 6px;
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    .result-bar strong {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    /* 列表 */
+    .list-wrap {
+      padding: 0 12px 20px;
+    }
+
+    .shop-list {
+      list-style: none;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .shop-item {
+      padding: 15px 18px;
+      border-bottom: 1px solid #eef1ef;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.15s;
+    }
+
+    .shop-item:last-child {
+      border-bottom: none;
+    }
+
+    .shop-item::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .shop-item.hidden {
+      display: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-light);
+      font-size: 15px;
+      display: none;
+    }
+
+    .empty-state.show {
+      display: block;
+    }
+
+    /* 底部連結 */
+    .footer-link {
+      text-align: center;
+      padding: 8px 16px 16px;
+    }
+
+    .footer-link a {
+      color: var(--primary);
+      font-size: 14px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    @media (min-width: 640px) {
+      body {
+        max-width: 480px;
+        margin: 0 auto;
+        box-shadow: 0 0 40px rgba(0,0,0,0.05);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <h1>景點店家列表</h1>
+    <p class="sub">斗六 · 雲中街 / 太平老街 / 行啟紀念館</p>
+  </header>
+
+  <!-- 搜尋條件 -->
+  <div class="filter-panel">
+    <div class="filter-row">
+      <label class="filter-label" for="category">類別</label>
+      <select id="category">
+        <option value="">全部類別</option>
+        <option value="美食">美食</option>
+        <option value="文化">文化</option>
+        <option value="特色">特色</option>
+      </select>
+    </div>
+
+    <div class="filter-row">
+      <label class="filter-label" for="area">區域</label>
+      <select id="area">
+        <option value="">全部區域</option>
+        <option value="太平老街">太平老街</option>
+        <option value="雲中街">雲中街</option>
+        <option value="行啟紀念館">行啟紀念館</option>
+      </select>
+    </div>
+
+    <div class="filter-row">
+      <span class="filter-label">標籤</span>
+      <div class="tag-group" id="tagGroup">
+        <button type="button" class="tag-btn" data-tag="咖啡">咖啡</button>
+        <button type="button" class="tag-btn" data-tag="甜點">甜點</button>
+        <button type="button" class="tag-btn" data-tag="手作">手作</button>
+        <button type="button" class="tag-btn" data-tag="古蹟">古蹟</button>
+        <button type="button" class="tag-btn" data-tag="文創">文創</button>
+        <button type="button" class="tag-btn" data-tag="在地小吃">在地小吃</button>
+        <button type="button" class="tag-btn" data-tag="拍照">拍照</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 結果統計 -->
+  <div class="result-bar">
+    <span>共 <strong id="count">0</strong> 間店家</span>
+    <button type="button" class="reset-btn" id="resetBtn">清除條件</button>
+  </div>
+
+  <!-- 列表（只顯示店家名稱） -->
+  <div class="list-wrap">
+    <ul class="shop-list" id="shopList"></ul>
+    <div class="empty-state" id="emptyState">目前沒有符合條件的店家</div>
+  </div>
+
+  <div class="footer-link">
+    <a href="yunzhong-street.html">← 返回雲中街介紹頁</a>
+  </div>
+
+  <script>
+    // ===== 店家資料 =====
+    const shops = [
+      // 雲中街
+      { name: "凹凸咖啡", category: "美食", area: "雲中街", tags: ["咖啡", "拍照"] },
+      { name: "拾柿優格", category: "美食", area: "雲中街", tags: ["甜點", "在地小吃"] },
+      { name: "啊拇啊拇", category: "美食", area: "雲中街", tags: ["甜點", "手作"] },
+      { name: "紙農書院", category: "文化", area: "雲中街", tags: ["手作", "文創"] },
+      { name: "卡農邦", category: "美食", area: "雲中街", tags: ["甜點"] },
+      { name: "好東西研究所", category: "特色", area: "雲中街", tags: ["文創", "手作"] },
+      { name: "春山里舍", category: "美食", area: "雲中街", tags: ["咖啡", "甜點"] },
+
+      // 太平老街
+      { name: "太平老街碗粿", category: "美食", area: "太平老街", tags: ["在地小吃"] },
+      { name: "長興冰店", category: "美食", area: "太平老街", tags: ["在地小吃", "甜點"] },
+      { name: "老街古早味", category: "美食", area: "太平老街", tags: ["在地小吃"] },
+      { name: "太平老街文創小店", category: "特色", area: "太平老街", tags: ["文創", "手作"] },
+      { name: "巴洛克建築群", category: "文化", area: "太平老街", tags: ["古蹟", "拍照"] },
+
+      // 行啟紀念館
+      { name: "行啟紀念館", category: "文化", area: "行啟紀念館", tags: ["古蹟", "拍照"] },
+      { name: "紀念館導覽中心", category: "文化", area: "行啟紀念館", tags: ["古蹟"] },
+      { name: "週邊咖啡小店", category: "美食", area: "行啟紀念館", tags: ["咖啡"] },
+      { name: "歷史建築展區", category: "文化", area: "行啟紀念館", tags: ["古蹟", "文創"] }
+    ];
+
+    // 狀態
+    let selectedTags = new Set();
+
+    const categoryEl = document.getElementById("category");
+    const areaEl = document.getElementById("area");
+    const tagGroup = document.getElementById("tagGroup");
+    const shopList = document.getElementById("shopList");
+    const countEl = document.getElementById("count");
+    const emptyState = document.getElementById("emptyState");
+    const resetBtn = document.getElementById("resetBtn");
+
+    // 初始化列表
+    function renderList() {
+      const category = categoryEl.value;
+      const area = areaEl.value;
+
+      const filtered = shops.filter(shop => {
+        if (category && shop.category !== category) return false;
+        if (area && shop.area !== area) return false;
+        if (selectedTags.size > 0) {
+          const hasAll = [...selectedTags].every(t => shop.tags.includes(t));
+          if (!hasAll) return false;
+        }
+        return true;
+      });
+
+      shopList.innerHTML = "";
+      filtered.forEach(shop => {
+        const li = document.createElement("li");
+        li.className = "shop-item";
+        li.textContent = shop.name;
+        shopList.appendChild(li);
+      });
+
+      countEl.textContent = filtered.length;
+      emptyState.classList.toggle("show", filtered.length === 0);
+      shopList.style.display = filtered.length === 0 ? "none" : "block";
+    }
+
+    // 標籤點擊
+    tagGroup.addEventListener("click", e => {
+      const btn = e.target.closest(".tag-btn");
+      if (!btn) return;
+      const tag = btn.dataset.tag;
+      if (selectedTags.has(tag)) {
+        selectedTags.delete(tag);
+        btn.classList.remove("active");
+      } else {
+        selectedTags.add(tag);
+        btn.classList.add("active");
+      }
+      renderList();
+    });
+
+    // 下拉變更
+    categoryEl.addEventListener("change", renderList);
+    areaEl.addEventListener("change", renderList);
+
+    // 清除條件
+    resetBtn.addEventListener("click", () => {
+      categoryEl.value = "";
+      areaEl.value = "";
+      selectedTags.clear();
+      tagGroup.querySelectorAll(".tag-btn").forEach(b => b.classList.remove("active"));
+      renderList();
+    });
+
+    // 初次渲染
+    renderList();
+  </script>
+</body>
+</html>
